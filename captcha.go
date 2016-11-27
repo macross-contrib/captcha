@@ -209,7 +209,6 @@ func Captchaer(options ...Options) macross.Handler {
 	return func(self *macross.Context) error {
 		cpt := NewCaptcha(prepareOptions(options))
 		cpt.store = cache.Store(self)
-
 		if strings.HasPrefix(string(self.Request.URI().Path()), cpt.URLPrefix) {
 			var chars string
 			id := path.Base(string(self.Request.URI().Path()))
@@ -230,14 +229,16 @@ func Captchaer(options ...Options) macross.Handler {
 				if cpt.store.Get(key, &chars); len(chars) == 0 {
 					self.Response.Header.SetStatusCode(macross.StatusNotFound)
 					self.Write([]byte("captcha not found"))
+					self.Abort()
 					return nil
 				}
 			}
 
-			self.Response.Header.Set("Content-Type", "image/png")
+			self.Response.Header.Set(macross.HeaderContentType, "image/png")
 			if _, err := NewImage([]byte(chars), cpt.StdWidth, cpt.StdHeight).WriteTo(self.Response.BodyWriter()); err != nil {
 				panic(fmt.Errorf("fail to write captcha: %v", err))
 			}
+			self.Abort()
 			return nil
 		}
 

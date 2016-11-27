@@ -3,24 +3,23 @@ package main
 import (
 	"fmt"
 
-	"github.com/insionng/vodka"
-	//"github.com/insionng/vodka/engine/standard"
-	"github.com/insionng/vodka/engine/fasthttp"
-	"github.com/insionng/vodka/middleware"
-	"github.com/vodka-contrib/cache"
-	"github.com/vodka-contrib/captcha"
-	"github.com/vodka-contrib/pongor"
+	"github.com/insionng/macross"
+	"github.com/insionng/macross/logger"
+	"github.com/insionng/macross/pongor"
+	"github.com/insionng/macross/recover"
+	"github.com/macross-contrib/cache"
+	"github.com/macross-contrib/captcha"
 )
 
 func main() {
-	v := vodka.New()
-	v.Use(middleware.Logger())
-	v.Use(middleware.Recover())
+	v := macross.New()
+	v.Use(logger.Logger())
+	v.Use(recover.Recover())
 	v.Use(cache.Cacher(cache.Options{Adapter: "memory"}))
 	v.Use(captcha.Captchaer())
 	v.SetRenderer(pongor.Renderor())
 
-	v.Get("/", func(self vodka.Context) error {
+	v.Get("/", func(self *macross.Context) error {
 		if cpt := self.Get("Captcha"); cpt != nil {
 			fmt.Println("Got:", cpt)
 		} else {
@@ -28,9 +27,8 @@ func main() {
 		}
 
 		self.Set("title", "你好，世界")
-		return self.Render(200, "index.html")
+		return self.Render(macross.StatusOK, "index")
 	})
 
-	v.Run(fasthttp.New(":7891"))
-	//v.Run(standard.New(":1987"))
+	v.Run(":7891")
 }
