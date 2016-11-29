@@ -27,7 +27,7 @@ func main() {
 		}
 
 		self.Set("title", "你好，世界")
-		return self.Render(macross.StatusOK, "index")
+		return self.Render("index")
 	})
 
 	v.Run(":7891")

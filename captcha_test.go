@@ -39,7 +39,7 @@ func Test_Captcha(t *testing.T) {
 		v.Use(cache.Cacher(cache.Options{Adapter: "memory"}))
 		v.Use(Captchaer())
 		v.Get("/", func(c *macross.Context) error {
-			return c.String(http.StatusOK, "")
+			return c.String("")
 		})
 		go v.Run(":7891")
 
