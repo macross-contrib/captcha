@@ -41,7 +41,7 @@ func Test_Captcha(t *testing.T) {
 		v.Get("/", func(c *macross.Context) error {
 			return c.String("")
 		})
-		go v.Run(":7891")
+		go v.Listen(":7891")
 
 		resp := httptest.NewRecorder()
 		req, err := http.NewRequest("GET", "http://localhost:7891/", nil)
