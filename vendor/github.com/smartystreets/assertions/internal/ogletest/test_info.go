@@ -18,7 +18,7 @@ package ogletest
 import (
 	"sync"
 
-	"golang.org/x/net/context"
+	"context"
 
 	"github.com/smartystreets/assertions/internal/oglemock"
 )

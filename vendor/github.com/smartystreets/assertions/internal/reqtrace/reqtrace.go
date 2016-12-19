@@ -18,7 +18,7 @@ package reqtrace
 import (
 	"flag"
 
-	"golang.org/x/net/context"
+	"context"
 )
 
 type contextKey int
