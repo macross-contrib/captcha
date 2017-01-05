@@ -85,7 +85,7 @@ func (c *Captcha) CreateCaptcha() (string, error) {
 
 // VerifyReq verify from a request
 func (c *Captcha) VerifyReq(self *macross.Context) bool {
-	return c.Verify(self.FormValue(c.FieldIDName), self.FormValue(c.FieldCaptchaName))
+	return c.Verify(self.Args(c.FieldIDName).String(), self.Args(c.FieldCaptchaName).String())
 }
 
 // Verify direct verify id and challenge string
@@ -229,8 +229,7 @@ func Captchaer(options ...Options) macross.Handler {
 				if cpt.store.Get(key, &chars); len(chars) == 0 {
 					self.Response.Header.SetStatusCode(macross.StatusNotFound)
 					self.Write([]byte("captcha not found"))
-					self.Abort()
-					return nil
+					return self.Abort()
 				}
 			}
 
@@ -238,11 +237,17 @@ func Captchaer(options ...Options) macross.Handler {
 			if _, err := NewImage([]byte(chars), cpt.StdWidth, cpt.StdHeight).WriteTo(self.Response.BodyWriter()); err != nil {
 				panic(fmt.Errorf("fail to write captcha: %v", err))
 			}
-			self.Abort()
-			return nil
+			return self.Abort()
 		}
 
 		self.Set("Captcha", cpt)
 		return self.Next()
 	}
+}
+
+func Store(self *macross.Context) (cpt *Captcha) {
+	if cpta, okay := self.Get("Captcha").(*Captcha); okay {
+		cpt = cpta
+	}
+	return
 }
